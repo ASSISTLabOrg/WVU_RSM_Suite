@@ -25,7 +25,7 @@ def lhsu(xmin,xmax,nsample):
 
     for j in range(nvar):
         numpy.random.shuffle(idx)
-        P =(idx-ran[:,j])/numpy.float(nsample)
+        P =(idx-ran[:,j])/float(nsample)
         s[:,j] = xmin[j] + P*(xmax[j]-xmin[j])
     # end
 
