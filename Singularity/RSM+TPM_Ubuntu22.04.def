@@ -5,7 +5,7 @@ From: ubuntu:22.04
     RSM+TPM Ubuntu 22.04 - Native python (3.10) - HPC Single-Node / Local PC (MPICH)
 
 %files
-    RSM_TPMC /tmp/RSM_TPMC
+    RSM_TPMC /tmp/
 
 %labels
     Author Guillermo Avendano-Franco <gufranco@mail.wvu.edu>
@@ -16,6 +16,7 @@ From: ubuntu:22.04
     export SHELL
 
 %post
+    set -e
     export DEBIAN_FRONTEND=noninteractive
     touch /etc/localtime
 
