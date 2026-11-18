@@ -47,7 +47,7 @@ sudo singularity build Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_U
 ```
 
 
-
+singularity shell Singularity/RSM+TPM_Ubuntu22.04.sif
 
 
 
