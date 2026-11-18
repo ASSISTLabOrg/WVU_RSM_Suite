@@ -1,15 +1,57 @@
 # Response Surface Model + Test Particle Model (RSM+TPM)
 
-## Response Surface Model
+Response Surface Model + Test Particle Model (RSM+TPM), supporting both local workstations (Linux/WSL) and High-Performance Computing (HPC) clusters via Singularity/Apptainer containers.
+
+
+## General Prerequisites
+
+* Ubuntu 22.04
+* Python: 3.10 or higher
+* Git
+
+## General Setup
+
+You can install the suite into your own WSL/local workstation, in your `$HOME` directory (using a new Python environment is highly recomended); or into your HPC workspace (e.g., `/scratch/$USER`)
 
 The Response Surface Model (RSM) is written in Python and uses these Python packages:
 
-  * Python version 3+ (Tested on Python 3.8+)
-  * Numpy
-  * Matplotlib
-  * Pandas
-  * sklearn
-  * h5py
+* Numpy
+* Matplotlib
+* Pandas
+* Scikit-learn
+* H5py
+
+### Cloning the repository (NOTE: Use for now fix/inst_issues_1.0 branch)
+```
+git clone -b fix/inst_issues_1.0 https://github.com/ASSISTLaboratory/WVU_RSM_Suite.git
+cd WVU_RSM_Suite
+```
+Choose one of the two definition files depending on your execution environment:
+
+## A. Local installation (Ubuntu)
+## B. Singularity container (Ubuntu)
+
+### Prerequisites
+* Singularity
+
+During the build, the `tpm` C/C++ executable is compiled inside the container and installed globally to `/usr/local/bin/tpm`.
+
+### Option 1: Standard Build — Local PC, WSL, or Single-Node HPC
+
+Recommended for: Laptops, workstations, and single-node HPC jobs (utilizing all available CPU cores within a single server/node, does not require loading any external HPC environment modules (`module load`)).
+MPI Backend: Self-contained MPICH.
+
+Build the image:
+```
+sudo singularity build Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_Ubuntu22.04.def
+```
+
+
+
+
+
+
+
 
 You can install these dependencies using the packages on the Linux distribution.
 On Ubuntu 22.04.2 LTS (Jammy Jellyfish) you can install most dependencies by executing the command:
@@ -27,13 +69,7 @@ sudo python3 -m pip install h5py
 
 The same packages can be used in the case of Ubuntu 20.04.6 LTS (Focal Fossa)
 
-## Cloning the repository
 
-Clone the repository from Github using the git command:
-
-```
-git clone https://github.com/ASSISTLaboratory/WVU_RSM_Suite.git
-```
 
 ## Compiling TPM
 
