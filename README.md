@@ -23,7 +23,7 @@ The Response Surface Model (RSM) is written in Python and uses these Python pack
 
 The suite comes with a basic example [solid_cube.stl](/Inputs/STL_Files/solid_cube.stl), preconfigured in the simulation workflow, so the user can test the installation and simulation work. Please refer the [User Guide](User_Manual.pdf) for additional details.
 
-### Cloning the repository (NOTE: Use for now fix/inst_issues_1.0 branch)
+### Cloning the repository (NOTE: Use the fix/inst_issues_1.0 branch)
 ```
 git clone -b fix/inst_issues_1.0 https://github.com/ASSISTLaboratory/WVU_RSM_Suite.git
 cd WVU_RSM_Suite
@@ -31,6 +31,7 @@ cd WVU_RSM_Suite
 Choose one of the two definition files depending on your execution environment:
 
 ## A. Local installation (Ubuntu)
+
 ## B. Singularity container (Ubuntu)
 
 ### Prerequisites
@@ -40,7 +41,7 @@ During the build, the `tpm` C/C++ executable is compiled inside the container an
 
 ### Option 1: Standard Build — Local PC, WSL, or Single-Node HPC
 
-Recommended for: Laptops, workstations, and single-node HPC jobs (utilizing all available CPU cores within a single server/node, does not require loading any external HPC environment modules (`module load`)).
+Recommended for: Laptops, workstations, and single-node HPC jobs (utilizing all available CPU cores within a single server/node).
 
 MPI Backend: Self-contained MPICH. Does not require loading any external HPC environment modules (`module load`).
 
@@ -65,6 +66,19 @@ Your terminal prompt will change to `Singularity>`, and your current working dir
 ```
 ./RSM_TPMC/rsm_run_script.py --tpm=/usr/local/bin/tpm
 ```
+
+### Option 2: Multi-Node HPC Cluster Build
+
+Recommended for: Large distributed HPC simulations spanning multiple compute nodes simultaneously (`#SBATCH --nodes=2` or more) via Slurm (`srun`).
+
+MPI Backend: OpenMPI, compatible with HPC OpenMPI modules (`parallel/openmpi/4.1.4_gcc93 or 4.1.5_gcc122`).
+
+1. Build the container (from `WVU_RSM_Suite` directory):
+```
+singularity build --fakeroot Singularity/RSM+TPM_Ubuntu22.04_OpenMPI.sif Singularity/RSM+TPM_Ubuntu22.04_OpenMPI.def
+```
+(Alternatively, build on your local PC with sudo and transfer the .sif file to the cluster via `scp` or `rsync`.)
+
 
 <!--
 
