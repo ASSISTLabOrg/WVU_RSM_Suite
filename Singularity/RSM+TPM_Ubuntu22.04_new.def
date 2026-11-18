@@ -1,0 +1,58 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%help
+    RSM+TPM Ubuntu 22.04 - Native python (3.10) - HPC Single-Node / Local PC (MPICH)
+
+%files
+    RSM_TPMC/tpm /tmp/tpm_src
+
+%labels
+    Author Guillermo Avendano-Franco <gufranco@mail.wvu.edu>
+    Contributor Rafael Polanco <rp00028@mix.wvu.edu>
+
+%environment
+    SHELL=/bin/bash
+    export SHELL
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    touch /etc/localtime
+
+    apt-get -y update && apt-get -y upgrade && \
+    apt-get -y install apt-utils locales dialog tzdata && \
+    locale-gen en_US.UTF-8 && update-locale && \
+    ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
+    # System dependencies (GCC, GSL, HDF5, MPICH, Python 3.10)
+    apt-get -y install wget vim less build-essential gdb git autoconf pkg-config \
+    libgsl-dev libhdf5-dev libmpich-dev python3 python3-pip
+
+    # Python dependencies
+    python3 -m pip install --no-cache-dir --upgrade pip
+    python3 -m pip install --no-cache-dir numpy matplotlib pandas scikit-learn h5py
+
+    apt-get -y clean && rm -rf /var/lib/apt/lists/*
+
+    # Compile tpm and install binary directly into /usr/local/bin
+    cd /tmp/tpm_src && \
+    ./autogen.sh && \
+    mkdir -p build && cd build && \
+    ../configure --enable-mpi --prefix=/usr/local && \
+    make -j$(nproc) && \
+    make check && \
+    make install && \
+    rm -rf /tmp/tpm_src
+
+    echo 'LANGUAGE="en_US:en"' >> $SINGULARITY_ENVIRONMENT
+    echo 'LC_ALL="en_US.UTF-8"' >> $SINGULARITY_ENVIRONMENT
+    echo 'LC_CTYPE="UTF-8"' >> $SINGULARITY_ENVIRONMENT
+    echo 'LANG="en_US.UTF-8"' >> $SINGULARITY_ENVIRONMENT
+
+    # HPC mount points (with no use for local PC/Workstation)
+    mkdir -p /gpfs20 /gpfs21 /users /group /scratch
+    touch /usr/bin/nvidia-smi
+
+%runscript
+    exec "$@"
