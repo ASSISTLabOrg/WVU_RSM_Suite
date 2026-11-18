@@ -5,7 +5,7 @@ From: ubuntu:22.04
     RSM+TPM Ubuntu 22.04 - Native python (3.10) - HPC Single-Node / Local PC (MPICH)
 
 %files
-    RSM_TPMC /tmp/
+    RSM_TPMC /opt/RSM_TPMC
 
 %labels
     Author Guillermo Avendano-Franco <gufranco@mail.wvu.edu>
@@ -37,16 +37,17 @@ From: ubuntu:22.04
     apt-get -y clean && rm -rf /var/lib/apt/lists/*
 
     # Compile tpm and install binary directly into /usr/local/bin
-    cd /tmp/RSM_TPMC/tpm && \
+    chmod -R +x /opt/RSM_TPMC    
+    cd /opt/RSM_TPMC/tpm && \
     ./autogen.sh && \
     mkdir -p build && cd build && \
     ../configure --enable-mpi --prefix=/usr/local && \
     make -j$(nproc) && \
     make check && \
     make install && \
-    cd /tmp/RSM_TPMC && \
+    cd /opt/RSM_TPMC && \
     ./rsm_run_script.py --tpm=tpm --help && \
-    rm -rf /tmp/RSM_TPMC
+    rm -rf /opt/RSM_TPMC
     
     echo 'LANGUAGE="en_US:en"' >> $SINGULARITY_ENVIRONMENT
     echo 'LC_ALL="en_US.UTF-8"' >> $SINGULARITY_ENVIRONMENT
@@ -58,4 +59,3 @@ From: ubuntu:22.04
 
 %runscript
     exec "$@"
-
