@@ -48,6 +48,7 @@ sudo singularity build Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_U
 
 
 singularity shell Singularity/RSM+TPM_Ubuntu22.04.sif
+./RSM_TPMC/rsm_run_script.py --tpm=/usr/local/bin/tpm
 
 
 
