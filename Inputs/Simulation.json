@@ -1,6 +1,6 @@
 {
     "Object Name":                                   "solid_cube.stl",
-    "Number of Ensemble Points":                     30,
+    "Number of Ensemble Points":                     10,
     "Number of Processors to be used":               1,
     "Component Rotation (1=No,2=Yes)":               1,
     "Gas Surface Interaction Model (1=DRIA,2=CLL)":  2,
