@@ -71,7 +71,7 @@ Your terminal prompt will change to `Singularity>`, and your current working dir
 
 Recommended for: Large distributed HPC simulations spanning multiple compute nodes simultaneously (`#SBATCH --nodes=2` or more) via Slurm (`srun`).
 
-MPI Backend: OpenMPI, compatible with HPC OpenMPI modules (`parallel/openmpi/4.1.4_gcc93 or 4.1.5_gcc122`).
+MPI Backend: OpenMPI, compatible with HPC OpenMPI modules.
 
 1. Build the container (from `WVU_RSM_Suite` directory):
 ```
@@ -79,6 +79,27 @@ singularity build --fakeroot Singularity/RSM+TPM_Ubuntu22.04_OpenMPI.sif Singula
 ```
 (Alternatively, build on your local PC with sudo and transfer the .sif file to the cluster via `scp` or `rsync`.)
 
+2. Load the HPC OpenMPI module :
+```
+module purge
+module load parallel/openmpi/4.1.4_gcc93
+```
+Refer with your HPC administrator which module to load for supporting OpenMPI for your Multi-Node HPC Cluster
+* Intel Compilers and Intel MPI: `compiler/2023.1.0 mpi/2021.9.0`
+* GCC Compilers 9.3 and OpenMPI 4.1.4: `parallel/openmpi/4.1.4_gcc93`
+* GCC Compilers 12.2 and OpenMPI 4.1.5: `parallel/openmpi/4.1.5_gcc122`
+* NVIDIA HPC 23.3 and OpenMPI 3.1.5: `lang/nvidia/nvhpc/23.3`
+
+3. Enter the container shell:
+```
+singularity shell Singularity/RSM+TPM_Ubuntu22.04_OpenMPI.sif
+```
+Your terminal prompt will change to `Singularity>`, and your current working directory will remain `WVU_RSM_Suite`.
+
+4. Run the simulation workflow with the **solid_cube example** using your local `Inputs` and saving results to your local `Outputs` directories:
+```
+./RSM_TPMC/rsm_run_script.py --tpm=/usr/local/bin/tpm
+```
 
 <!--
 
