@@ -55,10 +55,16 @@ sudo singularity build Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_U
 singularity build --fakeroot Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_Ubuntu22.04.def
 ```
 
-
+2. Enter the container shell:
+```
 singularity shell Singularity/RSM+TPM_Ubuntu22.04.sif
-./RSM_TPMC/rsm_run_script.py --tpm=/usr/local/bin/tpm
+```
+Your terminal prompt will change to `Singularity>`, and your current working directory will remain `WVU_RSM_Suite`.
 
+3. Run the simulation workflow with the **solid_cube example** using your local `Inputs` and saving results to your local `Outputs` directories:
+```
+./RSM_TPMC/rsm_run_script.py --tpm=/usr/local/bin/tpm
+```
 
 <!--
 
