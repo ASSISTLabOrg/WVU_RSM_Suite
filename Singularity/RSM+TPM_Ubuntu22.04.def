@@ -37,7 +37,6 @@ From: ubuntu:22.04
     apt-get -y clean && rm -rf /var/lib/apt/lists/*
 
     # Compile tpm and install binary directly into /usr/local/bin
-    chmod -R +x /opt/RSM_TPMC    
     cd /opt/RSM_TPMC/tpm && \
     ./autogen.sh && \
     mkdir -p build && cd build && \
