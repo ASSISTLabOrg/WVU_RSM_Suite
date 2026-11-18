@@ -21,7 +21,7 @@ The Response Surface Model (RSM) is written in Python and uses these Python pack
 * Scikit-learn
 * H5py
 
-The suite comes with a basic example [solid_cube.stl](/Inputs/STL_Files/solid_cube.stl), preconfigured in the simulation workflow, so the user can test the installation process and simulation work. Please refer the [User Guide](User_Manual.pdf) for additional details.
+The suite comes with a basic example [solid_cube.stl](/Inputs/STL_Files/solid_cube.stl), preconfigured in the simulation workflow, so the user can test the installation and simulation work. Please refer the [User Guide](User_Manual.pdf) for additional details.
 
 ### Cloning the repository (NOTE: Use for now fix/inst_issues_1.0 branch)
 ```
