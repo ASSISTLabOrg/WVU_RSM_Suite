@@ -41,11 +41,18 @@ During the build, the `tpm` C/C++ executable is compiled inside the container an
 ### Option 1: Standard Build — Local PC, WSL, or Single-Node HPC
 
 Recommended for: Laptops, workstations, and single-node HPC jobs (utilizing all available CPU cores within a single server/node, does not require loading any external HPC environment modules (`module load`)).
-MPI Backend: Self-contained MPICH.
 
-Build the image:
+MPI Backend: Self-contained MPICH. Does not require loading any external HPC environment modules (`module load`).
+
+1. Build the container (from `WVU_RSM_Suite` directory):
+
+* On a PC / WSL (with `sudo`):
 ```
 sudo singularity build Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_Ubuntu22.04.def
+```
+* On an HPC cluster (without `sudo`, using `--fakeroot`):
+```
+singularity build --fakeroot Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_Ubuntu22.04.def
 ```
 
 
@@ -53,7 +60,7 @@ singularity shell Singularity/RSM+TPM_Ubuntu22.04.sif
 ./RSM_TPMC/rsm_run_script.py --tpm=/usr/local/bin/tpm
 
 
-
+<!--
 
 
 You can install these dependencies using the packages on the Linux distribution.
@@ -144,4 +151,4 @@ To create the singularity image install Singularity on your Linux machine and as
 ```
 singularity build RSM+TPM_RockyLinux_9.sif RSM+TPM_RockyLinux_9.def
 ```
-
+-->
