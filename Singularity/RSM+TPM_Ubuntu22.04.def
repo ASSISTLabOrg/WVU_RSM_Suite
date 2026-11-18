@@ -1,0 +1,71 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%help
+RSM+TPM Ubuntu 22.04 - Native python (3.10)
+
+%files
+    RSM+TPM_Ubuntu22.04.def
+
+%labels
+    Author Guillermo Avendano-Franco <gufranco@mail.wvu.edu>
+    Contributor Rafael Polanco <rp00028@mix.wvu.edu>
+
+%environment
+    # Set environment shell
+    SHELL=/bin/bash
+    export SHELL
+
+%post
+    # Avoid interactivity
+    export DEBIAN_FRONTEND=noninteractive
+    touch /etc/localtime
+
+    # install basic libraries
+    apt-get -y update && apt-get -y upgrade && apt-get -y install apt-utils locales dialog && \
+    locale-gen en_US.UTF-8 && \
+    update-locale
+
+    ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
+    apt-get install -y tzdata && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
+    apt-get -y upgrade && \
+    apt-get -y install sudo passwd wget vim less build-essential gdb git autoconf pkg-config \
+    libgsl-dev libhdf5-dev libmpich-dev python3 python3-pip
+
+    python3 -m pip install --upgrade pip
+    python3 -m pip install numpy matplotlib pandas scikit-learn h5py
+
+    # clean useless deb files
+    apt-get -y autoclean
+
+    # install RSM-TPMC
+    cd /opt && \
+    git clone https://github.com/ASSISTLaboratory/WVU_RSM_Suite.git && \
+    cd WVU_RSM_Suite/RSM_TPMC/tpm
+    ./autogen.sh && mkdir build && cd build && \
+    ../configure --enable-mpi --prefix=/opt/WVU_RSM_Suite/RSM_TPMC/tpm && \
+    make && make install && \
+    cd ../.. && \
+    ./rsm_run_script.py --tpm=tpm/bin/tpm --help
+
+    echo "Sorting some env variables..."
+    echo 'LANGUAGE="en_US:en"' >> $SINGULARITY_ENVIRONMENT
+    echo 'LC_ALL="en_US.UTF-8"' >> $SINGULARITY_ENVIRONMENT
+    echo 'LC_CTYPE="UTF-8"' >> $SINGULARITY_ENVIRONMENT
+    echo 'LANG="en_US.UTF-8"' >>  $SINGULARITY_ENVIRONMENT
+
+    #mkdir /gpfs20
+    #mkdir /gpfs21
+    #mkdir /users
+    #mkdir /group
+    #mkdir /scratch
+    #touch /usr/bin/nvidia-smi
+
+%runscript
+    if [ ! -d "$HOME/WVU_RSM_Suite" ]; then
+       cp -r /opt/WVU_RSM_Suite "$HOME/"
+    fi
+    exec "$@"
+
