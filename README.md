@@ -30,6 +30,34 @@ cd WVU_RSM_Suite
 ```
 ## A. Local installation (Ubuntu)
 
+### Install system dependencies
+```
+sudo apt-get -y update && apt-get -y upgrade
+sudo apt-get -y install wget build-essential gdb autoconf pkg-config libgsl-dev libhdf5-dev libmpich-dev
+```
+### Install Python dependencies
+```
+python3 -m pip install --no-cache-dir --upgrade pip
+python3 -m pip install --no-cache-dir numpy matplotlib pandas scikit-learn h5py
+```
+### Compile TPM
+```
+cd RSM_TPMC/tpm/
+./autogen.sh
+mkdir -p build && cd build
+../configure --enable-mpi --prefix=/absolute/path/to/WVU_RSM_Suite/RSM_TPMC/tpm
+make -j$(nproc)
+make check
+make install
+cd ../../..
+./RSM_TPMC/rsm_run_script.py --tpm=RSM_TPMC/tpm/bin/tpm --help
+```
+### Test the simulation workflow 
+Run the simulation test with the **solid_cube example** using your local `Inputs` and saving results to your local `Outputs` directories:
+```
+./RSM_TPMC/rsm_run_script.py --tpm=RSM_TPMC/tpm/bin/tpm
+```
+
 ## B. Singularity container (Ubuntu)
 
 ### Prerequisites
