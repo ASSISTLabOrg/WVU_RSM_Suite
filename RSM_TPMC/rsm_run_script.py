@@ -202,7 +202,7 @@ def modify_input(RSMNAME,GSI_MODEL,Rotation,tpmdir, species, D2R):
 
     line1 = "Object Name                                               # " + RSMNAME +"\n"
     line2 = "Gas Surface Interaction Model                             # " + str(GSI_MODEL)+ "\n"
-    line3 = "Species Mole Fractions : X = [O, O2, N, N2, He, H]	   	# " + data +"\n"
+    line3 = "Species Mole Fractions : X = [O, O2, N, N2, He, H]        # " + data +"\n"
     line4 = "Component Rotation Flag                                   # " + str(Rotation)
     L = [line1,line2,line3,line4]
 

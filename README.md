@@ -1,108 +1,132 @@
 # Response Surface Model + Test Particle Model (RSM+TPM)
 
-## Response Surface Model
+Response Surface Model + Test Particle Model (RSM+TPM), supporting both local workstations (Linux/WSL) and High-Performance Computing (HPC) clusters via Singularity/Apptainer containers.
+
+
+## General Prerequisites
+
+* Ubuntu 22.04
+* Python: 3.10 or higher
+* Git
+
+## General Setup
+
+You can install the suite into your own WSL/local workstation, in your `$HOME` directory (using a new Python environment is highly recomended); or into your HPC workspace (e.g., `/scratch/$USER`)
 
 The Response Surface Model (RSM) is written in Python and uses these Python packages:
 
-  * Python version 3+ (Tested on Python 3.8+)
-  * Numpy
-  * Matplotlib
-  * Pandas
-  * sklearn
-  * h5py
+* Numpy
+* Matplotlib
+* Pandas
+* Scikit-learn
+* H5py
 
-You can install these dependencies using the packages on the Linux distribution.
-On Ubuntu 22.04.2 LTS (Jammy Jellyfish) you can install most dependencies by executing the command:
+The suite comes with a basic example [solid_cube.stl](/Inputs/STL_Files/solid_cube.stl), preconfigured in the simulation workflow, so the user can test the installation and simulation work. Please refer the [User Guide](User_Manual.pdf) for additional details.
 
+### Cloning the repository (NOTE: Use the fix/inst_issues_1.0 branch)
 ```
-sudo apt-get install python3 python3-numpy python3-matplotlib python3-pandas python3-sklearn python3-pip
+git clone -b fix/inst_issues_1.0 https://github.com/ASSISTLaboratory/WVU_RSM_Suite.git
+cd WVU_RSM_Suite
 ```
+## A. Local installation (Ubuntu)
 
-An exception here is h5py. The package provided by Ubuntu depends on OpenMPI.
-To install the serial version use pip:
-
+### Install system dependencies
 ```
-sudo python3 -m pip install h5py
+sudo apt-get -y update && apt-get -y upgrade
+sudo apt-get -y install wget build-essential gdb autoconf pkg-config libgsl-dev libhdf5-dev libmpich-dev
 ```
-
-The same packages can be used in the case of Ubuntu 20.04.6 LTS (Focal Fossa)
-
-## Cloning the repository
-
-Clone the repository from Github using the git command:
-
+### Install Python dependencies
 ```
-git clone https://github.com/ASSISTLaboratory/WVU_RSM_Suite.git
+python3 -m pip install --no-cache-dir --upgrade pip
+python3 -m pip install --no-cache-dir numpy matplotlib pandas scikit-learn h5py
 ```
-
-## Compiling TPM
-
-See the file `RSM_TPMC/tpm/README.md` for instructions on how to compile tpm before using RSM  
-
-## Execute RSM
-
-The main script for RSM is `rsm_run_script.py`.
-You can execute this script with two options `--mpiexec` and `--tpm`. These options will select which will be the MPI execution command and the location of the tpm executable.
-The values for default are equivalent to using this command:
-
+### Compile TPM
 ```
-./rsm_run_script.py --mpiexec=mpiexec --tpm=tpm/src/tpm
+cd RSM_TPMC/tpm/
+./autogen.sh
+mkdir -p build && cd build
+../configure --enable-mpi --prefix=/absolute/path/to/WVU_RSM_Suite/RSM_TPMC/tpm
+make -j$(nproc)
+make check
+make install
+cd ../../..
+./RSM_TPMC/rsm_run_script.py --tpm=RSM_TPMC/tpm/bin/tpm --help
+```
+### Test the simulation workflow 
+Run the simulation test with the **solid_cube example** using your local `Inputs` and saving results to your local `Outputs` directories:
+```
+./RSM_TPMC/rsm_run_script.py --tpm=RSM_TPMC/tpm/bin/tpm
 ```
 
-# Running RSM+TPMC on an HPC Cluster
+## B. Singularity container (Ubuntu)
 
-The main development of RSM+TPMC is done on a HPC cluster at West Virginia University.
-The cluster is called Thorny Flat.
+### Prerequisites
+* Singularity
 
-The folder `ARCH` contains scripts to load the corresponding modules and definition files for conteinarize the code using Singularity.
+During the build, the `tpm` C/C++ executable is compiled inside the container and installed globally to `/usr/local/bin/tpm`.
 
-## Loading Environment Modules
+Choose one of the two definition files depending on your execution environment:
 
-The script `load_modules_Thorny_Flat.sh` load a selection of modules used for the development and testing of the code.
-To activate the modules in the current shell session the script must be the source, otherwise, the modules will not be loaded in the current shell.
+### Option 1: Standard Build — Local PC, WSL, or Single-Node HPC
 
+Recommended for: Laptops, workstations, and single-node HPC jobs (utilizing all available CPU cores within a single server/node).
+
+MPI Backend: Self-contained MPICH. Does not require loading any external HPC environment modules (`module load`).
+
+1. Build the container (from `WVU_RSM_Suite` directory):
+
+* On a PC / WSL (with `sudo`):
 ```
-$> source ./ARCH/load_modules_Thorny_Flat.sh 
-
-Missing argument for choosing the compiler to be used.
-Select one of the following options:
-
- * intel22 : Intel Compilers and Intel MPI
- * gcc93   : GCC Compilers 9.3 and OpenMPI 4.1.4
- * gcc122  : GCC Compilers 12.2 and OpenMPI 4.1.5
- * nvhpc   : NVIDIA HPC 23.3 and OpenMPI 3.1.5
+sudo singularity build Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_Ubuntu22.04.def
 ```
-
-For example, if you want to use RSM+TPMC with the GCC 12.2 compiler, execute:
-
+* On an HPC cluster (without `sudo`, using `--fakeroot`):
 ```
-$> source ./ARCH/load_modules_Thorny_Flat.sh gcc122
+singularity build --fakeroot Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_Ubuntu22.04.def
 ```
 
-This will load the following modules
-
+2. Enter the container shell:
 ```
-Loading gcc version 12.2.0 : lang/gcc/12.2.0
-Loading hdf5 version 1.14.0_gcc122 : libs/hdf5/1.14.0_gcc122
-Loading python version cpython_3.11.3_gcc122 : lang/python/cpython_3.11.3_gcc122
-Loading gcc version 12.2.0 : lang/gcc/12.2.0
-Loading openmpi version 4.1.5_gcc122 : parallel/openmpi/4.1.5_gcc122
+singularity shell Singularity/RSM+TPM_Ubuntu22.04.sif
 ```
+Your terminal prompt will change to `Singularity>`, and your current working directory will remain `WVU_RSM_Suite`.
 
-These modules will provide all the libraries, compilers, and Python installed with the necessary packages for running the code.
-
-## Singularity containers
-
-On the folder ARCH there are 3 examples of Singularity definition files used to create containers for RSM+TPM
-
-
- * `RSM+TPM_RockyLinux_9.def`   
- * `RSM+TPM_Ubuntu_focal.def`  
- * `RSM+TPM_Ubuntu_jammy.def`
-
-To create the singularity image install Singularity on your Linux machine and as a superuser execute the following command:
-
+3. Run the simulation workflow with the **solid_cube example** using your local `Inputs` and saving results to your local `Outputs` directories:
 ```
-singularity build RSM+TPM_RockyLinux_9.sif RSM+TPM_RockyLinux_9.def
+./RSM_TPMC/rsm_run_script.py --tpm=/usr/local/bin/tpm
 ```
 
+### Option 2: Multi-Node HPC Cluster Build
+
+Recommended for: Large distributed HPC simulations spanning multiple compute nodes simultaneously (`#SBATCH --nodes=2` or more) via Slurm (`srun`).
+
+MPI Backend: Requires matching the MPI runtime inside the container with the host cluster's MPI module.
+
+1. Build the container (from `WVU_RSM_Suite` directory):
+
+| MPI runtime | Command |
+| :--- | :--- |
+| Intel MPI | `singularity build --fakeroot Singularity/RSM+TPM_Ubuntu22.04.sif Singularity/RSM+TPM_Ubuntu22.04.def` |
+| OpenMPI 4.1.x | `singularity build --fakeroot Singularity/RSM+TPM_Ubuntu22.04_OpenMPI.sif Singularity/RSM+TPM_Ubuntu22.04_OpenMPI.def` |
+
+2. Load the HPC MPI module :
+
+| MPI runtime | Load the Cluster's module |
+| :--- | :--- |
+| Intel MPI | e.g., `module load intel-mpi` |
+| OpenMPI 4.1.x | e.g., `module load openmpi` |
+
+> **Tip:** Run `module avail mpi` or `module avail openmpi` or ask your HPC administrator to check the exact module name for supporting MPI for your Multi-Node HPC Cluster
+
+3. Enter the container shell:
+
+| MPI runtime | Command |
+| :--- | :--- |
+| Intel MPI | `singularity shell Singularity/RSM+TPM_Ubuntu22.04.sif` |
+| OpenMPI 4.1.x | `singularity shell Singularity/RSM+TPM_Ubuntu22.04_OpenMPI.sif` |
+
+Your terminal prompt will change to `Singularity>`, and your current working directory will remain `WVU_RSM_Suite`.
+
+4. Run the simulation workflow with the **solid_cube example** using your local `Inputs` and saving results to your local `Outputs` directories:
+```
+./RSM_TPMC/rsm_run_script.py --mpiexec=mpiexec --tpm=/usr/local/bin/tpm
+```

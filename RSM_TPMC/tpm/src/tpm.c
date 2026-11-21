@@ -122,13 +122,15 @@ int main(int argc, char *argv[]) {
     }
 #if HAVE_MPI
     FILE *ftot = fopen("tempfiles/Cdout.dat", "w");
-    FILE *ftota = fopen("Outputs/Area_Regression_Models/Aout.dat","w");
+	//FILE *ftota = fopen("Outputs/Area_Regression_Models/Aout.dat","w");
+    FILE *ftota = fopen("Outputs/Projected_Area/Aout.dat","w");
     if (ftot == NULL) {
         printf("Error opening %s\n", "tempfiles/Cdout.dat");
         exit(1);
     }
      if (ftota == NULL) {
-        printf("Error opening %s\n", "Outputs/Area_Regression_Models/Aout.dat");
+	    //printf("Error opening %s\n", "Outputs/Area_Regression_Models/Aout.dat");
+        printf("Error opening %s\n", "Outputs/Projected_Area/Aout.dat");
         exit(1);
     }
 #endif /* HAVE_MPI */
@@ -314,7 +316,8 @@ int main(int argc, char *argv[]) {
     speciesname = "H";
   }
   printf("SpeciesName: %s\n", speciesname);
-  sprintf(areafilename, "Outputs/Area_Regression_Models/area_%s_%s%d.dat", objname,zeros,rank);
+  //sprintf(areafilename, "Outputs/Area_Regression_Models/area_%s_%s%d.dat", objname,zeros,rank);
+  sprintf(areafilename, "Outputs/Projected_Area/area_%s_%s%d.dat", objname,zeros,rank);
   FILE *farea = fopen(areafilename, "w");
   if(farea == NULL)
   {
@@ -374,7 +377,8 @@ int main(int argc, char *argv[]) {
 #else /* HAVE_MPI */
 
   FILE *farea = fopen(areafilename, "w");
-  sprintf(areafilename, "Outputs/Area_Regression_Models/area_%s.dat", objname);  
+  //sprintf(areafilename, "Outputs/Area_Regression_Models/area_%s.dat", objname);  
+  sprintf(areafilename, "Outputs/Projected_Area/area_%s.dat", objname);  
   //printf("Loop on NUM_POINTS\n");
   sprintf(filename,"%s",objname);
   for(i=0; i<NUM_POINTS; i++) {    // Parallel Loop
@@ -426,7 +430,8 @@ int main(int argc, char *argv[]) {
       //printf("Creating tempfiles/Cdout_%s%d.dat\n", zeros,i);
       sprintf(outfilename, "tempfiles/Cdout_%s%d.dat", zeros, i);
       fout = fopen(outfilename, "r");
-      sprintf(areaoutfilename,"Outputs/Area_Regression_Models/area_%s_%s%d.dat", objname,zeros,i);
+      //sprintf(areaoutfilename,"Outputs/Area_Regression_Models/area_%s_%s%d.dat", objname,zeros,i);
+      sprintf(areaoutfilename,"Outputs/Projected_Area/area_%s_%s%d.dat", objname,zeros,i);
       farea = fopen(areaoutfilename,"r");
       if(fout == NULL)
       {printf("Error opening %s\n",outfilename);
@@ -505,31 +510,31 @@ void read_input(char objname[1024], double X[], int *GSI_MODEL, int *ROTATION_FL
   }
 
   char line[1024];
-  //char *temp;
+  char *temp;
   char *data;
   //GAF:UNUSED int i;
 
 
   /* MESH OBJECT NAME */
   fgets(line, 1024, f);
-  //temp = strtok(line, "#");
+  temp = strtok(line, "#");
   data = strtok(NULL, "#");
   sscanf(data, "%s\n", objname);
 
   /* GAS SURFACE INTERACTION MODEL */
   fgets(line, 1024, f);
-  //temp = strtok(line, "#");
+  temp = strtok(line, "#");
   data = strtok(NULL, "#");
   sscanf(data, "%d\n", GSI_MODEL);
 
   /* SPECIES MOLE FRACTIONS X = [O, O2, N, N2, He, H] */
   fgets(line, 1024, f);
-  //temp = strtok(line, "#");
+  temp = strtok(line, "#");
   data = strtok(NULL, "#");
   sscanf(data, "%lf %lf %lf %lf %lf %lf\n", &X[0], &X[1], &X[2], &X[3], &X[4], &X[5]);
 
   fgets(line, 1024, f);
-  //temp = strtok(line, "#");
+  temp = strtok(line, "#");
   data = strtok(NULL, "#");
   sscanf(data, "%d\n", ROTATION_FLAG);
 
@@ -964,7 +969,7 @@ void facet_properties(char filename[1024], double Ux, double Uy, double Uz, int 
   char *vert2x, *vert2y, *vert2z;
   char *vert3x, *vert3y, *vert3z;
   char *normx, *normy, *normz;
-  //char *temp;
+  char *temp;
   int HeaderSize = 1;
   int i, ifacet;
 
@@ -985,8 +990,8 @@ void facet_properties(char filename[1024], double Ux, double Uy, double Uz, int 
   for(ifacet=0; ifacet<nfacets; ifacet++) {
     /* Read the first line and assign normal components */
     fgets(line1, 1024, f);
-    //temp = strtok(line1, " ");
-    //temp = strtok(NULL, " ");
+    temp = strtok(line1, " ");
+    temp = strtok(NULL, " ");
     normx = strtok(NULL, " ");
     normy = strtok(NULL, " ");
     normz = strtok(NULL, " ");
@@ -994,19 +999,19 @@ void facet_properties(char filename[1024], double Ux, double Uy, double Uz, int 
     fgets(line2, 1024, f);
     /* Read the third line and assign vertex #1 position */
     fgets(line3, 1024, f);
-    //temp = strtok(line3, " ");
+    temp = strtok(line3, " ");
     vert1x = strtok(NULL, " ");
     vert1y = strtok(NULL, " ");
     vert1z = strtok(NULL, " ");
     /* Read the fourth line and assign vertex #2 position */
     fgets(line4, 1024, f);
-    //temp = strtok(line4, " ");
+    temp = strtok(line4, " ");
     vert2x = strtok(NULL, " ");
     vert2y = strtok(NULL, " ");
     vert2z = strtok(NULL, " ");
     /* Read the fifth line and assign vertex #3 position */
     fgets(line5, 1024, f);
-    //temp = strtok(line5, " ");
+    temp = strtok(line5, " ");
     vert3x = strtok(NULL, " ");
     vert3y = strtok(NULL, " ");
     vert3z = strtok(NULL, " ");
