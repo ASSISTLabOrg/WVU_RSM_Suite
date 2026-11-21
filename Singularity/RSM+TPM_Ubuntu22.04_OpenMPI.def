@@ -2,7 +2,7 @@ Bootstrap: docker
 From: ubuntu:22.04
 
 %help
-    RSM+TPM Ubuntu 22.04 - Native python (3.10) - HPC Single-Node / Local PC (MPICH)
+    RSM+TPM Ubuntu 22.04 - Native python (3.10) - Multi-Node HPC Cluster (OpenMPI compatible)
 
 %files
     RSM_TPMC /opt/RSM_TPMC
@@ -10,6 +10,7 @@ From: ubuntu:22.04
 %labels
     Author Guillermo Avendano-Franco <gufranco@mail.wvu.edu>
     Contributor Rafael Polanco <rp00028@mix.wvu.edu>
+
 
 %environment
     SHELL=/bin/bash
@@ -26,15 +27,19 @@ From: ubuntu:22.04
     ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata
 
-    # System dependencies (GCC, GSL, HDF5, MPICH, Python 3.10)
+    # System dependencies (GCC, GSL, HDF5, OpenMPI, Python 3.10)
     apt-get -y install wget vim less build-essential gdb git autoconf pkg-config \
-    libgsl-dev libhdf5-dev libmpich-dev python3 python3-pip
+    libgsl-dev libhdf5-dev libopenmpi-dev openmpi-bin python3 python3-pip
 
     # Python dependencies
     python3 -m pip install --no-cache-dir --upgrade pip
     python3 -m pip install --no-cache-dir numpy matplotlib pandas scikit-learn h5py
 
     apt-get -y clean && rm -rf /var/lib/apt/lists/*
+
+    # Required for OpenMPI check during container build
+    export OMPI_ALLOW_RUN_AS_ROOT=1
+    export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
 
     # Compile tpm and install binary directly into /usr/local/bin
     cd /opt/RSM_TPMC/tpm && \
@@ -53,8 +58,9 @@ From: ubuntu:22.04
     echo 'LC_CTYPE="UTF-8"' >> $SINGULARITY_ENVIRONMENT
     echo 'LANG="en_US.UTF-8"' >> $SINGULARITY_ENVIRONMENT
 
-    # HPC mount points (with no use for local PC/Workstation)
+    # HPC Cluster mount points (Thorny Flat)
     mkdir -p /gpfs20 /gpfs21 /users /group /scratch
 
 %runscript
     exec "$@"
+    
