@@ -28,8 +28,6 @@ The suite comes with a basic example [solid_cube.stl](/Inputs/STL_Files/solid_cu
 git clone -b fix/inst_issues_1.0 https://github.com/ASSISTLaboratory/WVU_RSM_Suite.git
 cd WVU_RSM_Suite
 ```
-Choose one of the two definition files depending on your execution environment:
-
 ## A. Local installation (Ubuntu)
 
 ## B. Singularity container (Ubuntu)
@@ -38,6 +36,8 @@ Choose one of the two definition files depending on your execution environment:
 * Singularity
 
 During the build, the `tpm` C/C++ executable is compiled inside the container and installed globally to `/usr/local/bin/tpm`.
+
+Choose one of the two definition files depending on your execution environment:
 
 ### Option 1: Standard Build — Local PC, WSL, or Single-Node HPC
 
