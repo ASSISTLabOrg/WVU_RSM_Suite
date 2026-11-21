@@ -11,7 +11,6 @@ From: ubuntu:22.04
     Author Guillermo Avendano-Franco <gufranco@mail.wvu.edu>
     Contributor Rafael Polanco <rp00028@mix.wvu.edu>
 
-
 %environment
     SHELL=/bin/bash
     export SHELL
@@ -58,8 +57,8 @@ From: ubuntu:22.04
     echo 'LC_CTYPE="UTF-8"' >> $SINGULARITY_ENVIRONMENT
     echo 'LANG="en_US.UTF-8"' >> $SINGULARITY_ENVIRONMENT
 
-    # HPC Cluster mount points (Thorny Flat)
-    mkdir -p /gpfs20 /gpfs21 /users /group /scratch
+    # HPC mount points (General mounts for HPC)
+    mkdir -p /scratch, /project, /work, /gpfs, /users, /group
 
 %runscript
     exec "$@"

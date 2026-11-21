@@ -53,8 +53,8 @@ From: ubuntu:22.04
     echo 'LC_CTYPE="UTF-8"' >> $SINGULARITY_ENVIRONMENT
     echo 'LANG="en_US.UTF-8"' >> $SINGULARITY_ENVIRONMENT
 
-    # HPC mount points (with no use for local PC/Workstation)
-    mkdir -p /gpfs20 /gpfs21 /users /group /scratch
+    # HPC mount points (General mounts for HPC. Ignore for local PC/Workstation)
+    mkdir -p /scratch, /project, /work, /gpfs, /users, /group
 
 %runscript
     exec "$@"
